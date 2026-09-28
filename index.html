@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Servicify – Find Trusted Local Workers Near You</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#6c63ff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+
+</head>
+<body>
+<!-- ===== POPUP NOTIFICATION ===== -->
+<div id="loader" style="display:none"></div>
+<div id="popup" class="popup hidden">
+  <i class="fa-solid fa-circle-check"></i>
+  <span id="popup-msg">Action completed!</span>
+  <button onclick="closePopup()"><i class="fa-solid fa-xmark"></i></button>
+</div>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    
+    <a href="#home" class="nav-logo">
+      <span class="logo-icon">⚡</span> Servicify
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home" class="nav-link active">Home</a></li>
+      <li><a href="#" class="nav-link" onclick="showPage('services-page')">Services</a></li>
+      <li><a href="#" class="nav-link" onclick="showPage('workers-page')">Workers</a></li>
+      <li><a href="#" class="nav-link" onclick="showPage('tenders-page')">Tenders</a></li>
+      <li><a href="#" class="nav-link" onclick="showPage('ai-page')">AI Help</a></li>
+      <li><a href="#" class="nav-link nav-btn-outline" onclick="showPage('login-page')">Login</a></li>
+      <li><a href="#" class="nav-link nav-btn-fill" onclick="showPage('register-page')">Register</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ===== LOGIN PAGE ===== -->
+<div id="login-page" class="page">
+  <div class="auth-wrapper">
+    <div class="auth-visual"><div class="auth-visual-content"><div class="auth-logo">⚡ Servicify</div><h2>Welcome Back!</h2><p>Log in to manage your bookings, track workers, and access your service history.</p><ul class="auth-perks"><li><i class="fa-solid fa-check"></i> Instant booking confirmation</li><li><i class="fa-solid fa-check"></i> Real-time worker tracking</li><li><i class="fa-solid fa-check"></i> Secure payment history</li></ul></div></div>
+    <div class="auth-form-wrap">
+      <button class="back-btn" onclick="showPage('home')"><i class="fa-solid fa-arrow-left"></i> Back</button>
+      <h2>Sign In</h2>
+      <p class="auth-sub">Don't have an account? <a href="#" onclick="showPage('register-page')">Register free</a></p>
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group"><label>Email Address</label><div class="input-icon"><i class="fa-solid fa-envelope"></i><input type="email" id="login-email" placeholder="you@example.com" required /></div></div>
+        <div class="form-group"><label>Password</label><div class="input-icon"><i class="fa-solid fa-lock"></i><input type="password" id="login-pass" placeholder="Enter password" required /><button type="button" class="toggle-pass" onclick="togglePass('login-pass',this)"><i class="fa-solid fa-eye"></i></button></div></div>
+        <div class="form-row-between"><label class="checkbox-label"><input type="checkbox" /> Remember me</label><a href="#" class="forgot-link">Forgot Password?</a></div>
+        <button type="submit" class="btn-primary btn-full">Sign In <i class="fa-solid fa-arrow-right"></i></button>
+      </form>
+      <div class="social-login"><div class="divider"><span>or continue with</span></div><div class="social-btns"><button class="social-btn"><i class="fa-brands fa-google"></i> Google</button><button class="social-btn"><i class="fa-brands fa-facebook-f"></i> Facebook</button></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== REGISTER PAGE ===== -->
+<div id="register-page" class="page">
+  <div class="auth-wrapper">
+    <div class="auth-visual"><div class="auth-visual-content"><div class="auth-logo">⚡ Servicify</div><h2>Join Servicify</h2><p>Register as a customer to book services, or as a worker to earn by offering your skills.</p><ul class="auth-perks"><li><i class="fa-solid fa-check"></i> 50,000+ verified workers</li><li><i class="fa-solid fa-check"></i> Secure escrow payments</li><li><i class="fa-solid fa-check"></i> AI-powered assistance</li></ul></div></div>
+    <div class="auth-form-wrap">
+      <button class="back-btn" onclick="showPage('home')"><i class="fa-solid fa-arrow-left"></i> Back</button>
+      <h2>Create Account</h2>
+      <p class="auth-sub">Already have an account? <a href="#" onclick="showPage('login-page')">Sign in</a></p>
+      <div class="tab-row"><button class="tab-btn active" id="tab-customer" onclick="switchRegTab('customer')"><i class="fa-solid fa-user"></i> Customer</button><button class="tab-btn" id="tab-worker" onclick="switchRegTab('worker')"><i class="fa-solid fa-hard-hat"></i> Worker</button></div>
+      <form id="customer-form" onsubmit="handleRegister(event,'customer')">
+        <div class="form-row2"><div class="form-group"><label>Full Name</label><div class="input-icon"><i class="fa-solid fa-user"></i><input type="text" id="c-name" placeholder="" required /></div></div><div class="form-group"><label>Phone</label><div class="input-icon"><i class="fa-solid fa-phone"></i><input type="tel" id="c-phone" placeholder="" required /></div></div></div>
+        <div class="form-group"><label>Email</label><div class="input-icon"><i class="fa-solid fa-envelope"></i><input type="email" id="c-email" placeholder="you@example.com" required /></div></div>
+        <div class="form-group"><label>Address</label><div class="input-icon"><i class="fa-solid fa-location-dot"></i><input type="text" id="c-address" placeholder="Your full address" required /></div></div>
+        <div class="form-row2"><div class="form-group"><label>Password</label><div class="input-icon"><i class="fa-solid fa-lock"></i><input type="password" id="c-pass" placeholder="Min. 8 chars" required /></div></div><div class="form-group"><label>Confirm Password</label><div class="input-icon"><i class="fa-solid fa-lock"></i><input type="password" id="c-cpass" placeholder="Repeat password" required /></div></div></div>
+        <button type="submit" class="btn-primary btn-full">Create Account <i class="fa-solid fa-arrow-right"></i></button>
+      </form>
+      <form id="worker-form" class="hidden" onsubmit="handleRegister(event,'worker')">
+        <div class="form-row2"><div class="form-group"><label>Full Name</label><div class="input-icon"><i class="fa-solid fa-user"></i><input type="text" id="w-name" placeholder="" /></div></div><div class="form-group"><label>Phone</label><div class="input-icon"><i class="fa-solid fa-phone"></i><input type="tel" id="w-phone" placeholder="" /></div></div></div>
+        <div class="form-group"><label>Email</label><div class="input-icon"><i class="fa-solid fa-envelope"></i><input type="email" id="w-email" placeholder="you@example.com" /></div></div>
+        <div class="form-row2"><div class="form-group"><label>Service Category</label><div class="input-icon"><i class="fa-solid fa-briefcase"></i><select id="w-category"><option>Plumber</option><option>Electrician</option><option>Carpenter</option><option>Painter</option><option>AC Repair</option><option>Cleaner</option></select></div></div><div class="form-group"><label>Experience (Years)</label><div class="input-icon"><i class="fa-solid fa-clock"></i><input type="number" id="w-exp" placeholder="e.g. 5" min="0" /></div></div></div>
+        <div class="form-group"><label>Location / City</label><div class="input-icon"><i class="fa-solid fa-location-dot"></i><input type="text" id="w-location" placeholder="Mumbai, Maharashtra" /></div></div>
+        <div class="form-row2"><div class="form-group"><label>Upload ID Proof</label><div class="file-upload-box"><i class="fa-solid fa-id-card"></i><span>Choose file</span><input type="file" accept="image/*,.pdf" /></div></div><div class="form-group"><label>Profile Photo</label><div class="file-upload-box"><i class="fa-solid fa-camera"></i><span>Choose photo</span><input type="file" accept="image/*" /></div></div></div>
+        <div class="form-group"><label>Password</label><div class="input-icon"><i class="fa-solid fa-lock"></i><input type="password" id="w-pass" placeholder="Min. 8 chars" /></div></div>
+        <button type="submit" class="btn-primary btn-full">Register as Worker <i class="fa-solid fa-arrow-right"></i></button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HOME PAGE ===== -->
+<main id="home" class="page active">
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-badge"><i class="fa-solid fa-shield-halved"></i> Trusted by 2M+ customers</div>
+      <h1 class="hero-title">Find Trusted Local<br/><span class="gradient-text">Workers Near You</span></h1>
+      <p class="hero-sub">Book verified plumbers, electricians, carpenters and more — instantly and securely.</p>
+      <div class="hero-search-box">
+        <div class="search-field">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" placeholder="What service do you need?" id="hero-service-input" />
+        </div>
+        <div class="search-divider"></div>
+        <div class="search-field">
+          <i class="fa-solid fa-location-dot"></i>
+          <input type="text" placeholder="Your location" id="hero-location-input" />
+        </div>
+        <button class="btn-primary hero-search-btn" onclick="handleHeroSearch()">
+          <i class="fa-solid fa-bolt"></i> Find Service
+        </button>
+      </div>
+      <div class="hero-tags">
+        <span onclick="quickSearch('Plumber')">🔧 Plumber</span>
+        <span onclick="quickSearch('Electrician')">⚡ Electrician</span>
+        <span onclick="quickSearch('Carpenter')">🪚 Carpenter</span>
+        <span onclick="quickSearch('Cleaner')">🧹 Cleaner</span>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card-float card-1"><i class="fa-solid fa-star" style="color:#f59e0b"></i><div><strong>4.9 Rating</strong><br/><small>Top Workers</small></div></div>
+      <div class="hero-card-float card-2"><i class="fa-solid fa-check-circle" style="color:#22c55e"></i><div><strong>Verified</strong><br/><small>All Pros</small></div></div>
+      <div class="hero-card-float card-3"><i class="fa-solid fa-shield" style="color:#6366f1"></i><div><strong>Secure Pay</strong><br/><small>Guaranteed</small></div></div>
+      <div class="hero-circle-bg"></div>
+      <div class="hero-icon-grid">
+        <div class="icon-bubble"><i class="fa-solid fa-wrench"></i></div>
+        <div class="icon-bubble"><i class="fa-solid fa-bolt"></i></div>
+        <div class="icon-bubble"><i class="fa-solid fa-hammer"></i></div>
+        <div class="icon-bubble"><i class="fa-solid fa-paint-roller"></i></div>
+        <div class="icon-bubble"><i class="fa-solid fa-wind"></i></div>
+        <div class="icon-bubble"><i class="fa-solid fa-broom"></i></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section how-works">
+    <div class="section-container">
+      <div class="section-label">Simple Process</div>
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-sub">Book a service in 3 easy steps</p>
+      <div class="steps-grid">
+        <div class="step-card"><div class="step-num">01</div><div class="step-icon"><i class="fa-solid fa-magnifying-glass"></i></div><h3>Search Service</h3><p>Browse 50+ services or search what you need. Filter by category, location, or rating.</p></div>
+        <div class="step-connector"><i class="fa-solid fa-arrow-right"></i></div>
+        <div class="step-card"><div class="step-num">02</div><div class="step-icon"><i class="fa-solid fa-calendar-check"></i></div><h3>Book Worker</h3><p>View verified worker profiles, read reviews, and book your preferred time slot.</p></div>
+        <div class="step-connector"><i class="fa-solid fa-arrow-right"></i></div>
+        <div class="step-card"><div class="step-num">03</div><div class="step-icon"><i class="fa-solid fa-lock"></i></div><h3>Secure Payment</h3><p>Pay safely via UPI, card, or net banking. Money released only after job is done.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section popular-services">
+    <div class="section-container">
+      <div class="section-label">What We Offer</div>
+      <h2 class="section-title">Popular Services</h2>
+      <p class="section-sub">Expert professionals for every home need</p>
+      <div class="services-grid">
+        <div class="service-card" onclick="goToService('Plumber')"><div class="service-icon-wrap" style="--clr:#3b82f6"><i class="fa-solid fa-wrench"></i></div><h3>Plumber</h3><p>Pipe repairs, leaks, installations &amp; more</p><div class="service-meta"><span>⭐ 4.8</span><span>320+ pros</span></div></div>
+        <div class="service-card" onclick="goToService('Electrician')"><div class="service-icon-wrap" style="--clr:#f59e0b"><i class="fa-solid fa-bolt"></i></div><h3>Electrician</h3><p>Wiring, fuse, switchboard &amp; appliances</p><div class="service-meta"><span>⭐ 4.9</span><span>410+ pros</span></div></div>
+        <div class="service-card" onclick="goToService('Carpenter')"><div class="service-icon-wrap" style="--clr:#8b5cf6"><i class="fa-solid fa-hammer"></i></div><h3>Carpenter</h3><p>Furniture, doors, windows &amp; woodwork</p><div class="service-meta"><span>⭐ 4.7</span><span>280+ pros</span></div></div>
+        <div class="service-card" onclick="goToService('Painter')"><div class="service-icon-wrap" style="--clr:#ec4899"><i class="fa-solid fa-paint-roller"></i></div><h3>Painter</h3><p>Interior, exterior &amp; decorative painting</p><div class="service-meta"><span>⭐ 4.8</span><span>190+ pros</span></div></div>
+        <div class="service-card" onclick="goToService('AC Repair')"><div class="service-icon-wrap" style="--clr:#06b6d4"><i class="fa-solid fa-wind"></i></div><h3>AC Repair</h3><p>Service, gas refill, installation &amp; repair</p><div class="service-meta"><span>⭐ 4.9</span><span>240+ pros</span></div></div>
+        <div class="service-card" onclick="goToService('Cleaner')"><div class="service-icon-wrap" style="--clr:#22c55e"><i class="fa-solid fa-broom"></i></div><h3>Cleaner</h3><p>Home, office &amp; deep cleaning services</p><div class="service-meta"><span>⭐ 4.8</span><span>360+ pros</span></div></div>
+      </div>
+      <div style="text-align:center;margin-top:2.5rem"><button class="btn-primary" onclick="showPage('services-page')">View All Services <i class="fa-solid fa-arrow-right"></i></button></div>
+    </div>
+  </section>
+
+  <section class="section why-choose">
+    <div class="section-container">
+      <div class="section-label">Why Us</div>
+      <h2 class="section-title">Why Choose Servicify</h2>
+      <p class="section-sub">We put quality and trust at the centre of everything</p>
+      <div class="why-grid">
+        <div class="why-card"><div class="why-icon"><i class="fa-solid fa-id-badge"></i></div><h3>Verified Workers</h3><p>Every professional undergoes background checks, ID verification, and skill assessment before onboarding.</p></div>
+        <div class="why-card"><div class="why-icon"><i class="fa-solid fa-shield-halved"></i></div><h3>Secure Payments</h3><p>Escrow-based payments ensure your money is safe. Released only after successful job completion.</p></div>
+        <div class="why-card"><div class="why-icon"><i class="fa-solid fa-robot"></i></div><h3>AI Support</h3><p>Upload a photo of your problem and our AI instantly diagnoses it and suggests the right service.</p></div>
+        <div class="why-card"><div class="why-icon"><i class="fa-solid fa-star"></i></div><h3>Ratings &amp; Reviews</h3><p>Transparent reviews from verified customers. Only hire workers with proven track records.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats-section">
+    <div class="section-container">
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-num" data-count="2000000">0</div><div class="stat-label">Happy Customers</div></div>
+        <div class="stat-item"><div class="stat-num" data-count="50000">0</div><div class="stat-label">Verified Workers</div></div>
+        <div class="stat-item"><div class="stat-num" data-count="100">0</div><div class="stat-label">Service Categories</div></div>
+        <div class="stat-item"><div class="stat-num" data-count="500">0</div><div class="stat-label">Cities Covered</div></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div class="footer-logo">⚡ Servicify</div>
+        <p>Connecting you with trusted local professionals for every home service need.</p>
+        <div class="social-icons">
+          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#"><i class="fa-brands fa-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+      </div>
+      <div class="footer-links"><h4>Company</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Careers</a></li><li><a href="#">Blog</a></li><li><a href="#">Press</a></li></ul></div>
+      <div class="footer-links"><h4>Support</h4><ul><li><a href="#">Help Center</a></li><li><a href="#">Contact Us</a></li><li><a href="#">Safety</a></li><li><a href="#">Terms &amp; Privacy</a></li></ul></div>
+      <div class="footer-links"><h4>Services</h4><ul><li><a href="#" onclick="showPage('services-page')">All Services</a></li><li><a href="#" onclick="showPage('workers-page')">Find Workers</a></li><li><a href="#" onclick="showPage('tenders-page')">Post Tender</a></li><li><a href="#" onclick="showPage('ai-page')">AI Help</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>© 2025 Servicify. All rights reserved.</p></div>
+  </footer>
+</main>
+
+<!-- ===== SERVICES PAGE ===== -->
+<div id="services-page" class="page">
+  <div class="page-wrapper">
+    <div class="page-header"><button class="back-btn" onclick="showPage('home')"><i class="fa-solid fa-arrow-left"></i> Back</button><h1>Find Services</h1><p>Browse professionals across all categories</p></div>
+    <div class="filter-bar">
+      <div class="filter-group"><label><i class="fa-solid fa-filter"></i> Category</label><select id="filter-category" onchange="filterWorkers()"><option value="">All Categories</option><option>Plumber</option><option>Electrician</option><option>Carpenter</option><option>Painter</option><option>AC Repair</option><option>Cleaner</option><option>Mason</option><option>Welder</option></select></div>
+      <div class="filter-group"><label><i class="fa-solid fa-map"></i> State</label><select id="filter-state" onchange="filterWorkers()"><option value="">All States</option><option>Gujarat</option><option>Maharashtra</option><option>Delhi</option><option>Karnataka</option><option>Tamil Nadu</option><option>Telangana</option><option>Rajasthan</option><option>West Bengal</option><option>Madhya Pradesh</option><option>Uttar Pradesh</option><option>Punjab</option><option>Andhra Pradesh</option><option>Kerala</option><option>Bihar</option><option>Haryana</option><option>Goa</option><option>Odisha</option><option>Assam</option><option>Uttarakhand</option><option>Himachal Pradesh</option></select></div>
+      <div class="filter-group"><label><i class="fa-solid fa-location-dot"></i> City</label><select id="filter-location" onchange="filterWorkers()"><option value="">All Cities</option><option>Vadodara</option><option>Ahmedabad</option><option>Surat</option><option>Rajkot</option><option>Gandhinagar</option><option>Anand</option><option>Bharuch</option><option>Morbi</option><option>Bhavnagar</option><option>Jamnagar</option><option>Junagadh</option><option>Kutch</option><option>Mumbai</option><option>Pune</option><option>Nagpur</option><option>Delhi</option><option>Noida</option><option>Gurgaon</option><option>Bangalore</option><option>Hyderabad</option><option>Chennai</option><option>Kolkata</option><option>Jaipur</option><option>Indore</option><option>Lucknow</option><option>Chandigarh</option><option>Patna</option><option>Bhubaneswar</option><option>Guwahati</option><option>Panaji</option></select></div>
+      <div class="filter-group"><label><i class="fa-solid fa-star"></i> Rating</label><select id="filter-rating" onchange="filterWorkers()"><option value="">Any Rating</option><option value="4.9">4.9 ⭐ Top Rated</option><option value="4.8">4.8+</option><option value="4.7">4.7+</option><option value="4.5">4.5+</option></select></div>
+      <div class="filter-group" style="align-self:flex-end"><button class="btn-outline btn-sm" onclick="resetFilters()"><i class="fa-solid fa-rotate-left"></i> Reset</button></div>
+    </div>
+    <div id="filter-count" style="margin-bottom:1rem;font-size:0.875rem;color:var(--text-muted)"></div>
+    <div class="workers-grid" id="workers-grid"></div>
+  </div>
+</div>
+
+<!-- ===== WORKERS PAGE ===== -->
+<div id="workers-page" class="page">
+  <div class="page-wrapper">
+    <div class="page-header"><button class="back-btn" onclick="showPage('home')"><i class="fa-solid fa-arrow-left"></i> Back</button><h1>All Workers</h1><p>300+ verified professionals ready to help</p></div>
+    <div class="workers-grid" id="all-workers-grid"></div>
+  </div>
+</div>
+
+<!-- ===== WORKER PROFILE PAGE ===== -->
+<div id="profile-page" class="page">
+  <div class="page-wrapper">
+    <button class="back-btn" onclick="showPage('services-page')"><i class="fa-solid fa-arrow-left"></i> Back</button>
+    <div class="profile-hero">
+      <div class="profile-avatar-wrap"><div class="profile-avatar" id="profile-avatar-img"></div><div class="verified-badge"><i class="fa-solid fa-circle-check"></i> Verified</div></div>
+      <div class="profile-info">
+        <h2 id="profile-name"></h2>
+        <div class="profile-tags"><span class="tag tag-service" id="profile-service"></span><span class="tag tag-location"><i class="fa-solid fa-location-dot"></i> <span id="profile-location"></span></span><span class="tag tag-exp"><i class="fa-solid fa-clock"></i> <span id="profile-exp"></span> years exp.</span></div>
+        <div class="profile-rating" id="profile-rating"></div>
+        <p id="profile-bio"></p>
+        <div class="profile-actions"><button class="btn-primary" onclick="showPage('booking-page')"><i class="fa-solid fa-calendar-check"></i> Book Service</button><button class="btn-outline" onclick="showPopup('Chat feature coming soon!')"><i class="fa-solid fa-comment"></i> Message</button></div>
+      </div>
+    </div>
+    <div class="profile-reviews"><h3>Customer Reviews</h3><div id="profile-reviews-list"></div></div>
+  </div>
+</div>
+
+<!-- ===== BOOKING PAGE ===== -->
+<div id="booking-page" class="page">
+  <div class="page-wrapper narrow">
+    <button class="back-btn" onclick="showPage('profile-page')"><i class="fa-solid fa-arrow-left"></i> Back</button>
+    <h2 class="section-title" style="text-align:left;margin-bottom:0.25rem">Book a Service</h2>
+    <p style="color:var(--text-muted);margin-bottom:2rem">Fill in the details and confirm your booking</p>
+    <form onsubmit="handleBooking(event)" class="booking-form">
+      <div class="form-card">
+        <h4><i class="fa-solid fa-info-circle"></i> Service Details</h4>
+        <div class="form-group"><label>Service Type</label><div class="input-icon"><i class="fa-solid fa-briefcase"></i><select id="b-service"><option>Plumber</option><option>Electrician</option><option>Carpenter</option><option>Painter</option><option>AC Repair</option><option>Cleaner</option></select></div></div>
+        <div class="form-row2"><div class="form-group"><label>Select Date</label><div class="input-icon"><i class="fa-solid fa-calendar"></i><input type="date" id="b-date" required /></div></div><div class="form-group"><label>Select Time</label><div class="input-icon"><i class="fa-solid fa-clock"></i><input type="time" id="b-time" required /></div></div></div>
+        <div class="form-group"><label>Service Address</label><div class="input-icon"><i class="fa-solid fa-location-dot"></i><input type="text" id="b-address" placeholder="Full address with landmark" required /></div></div>
+        <div class="form-group"><label>Problem Description</label><textarea id="b-desc" placeholder="Describe the issue in detail..." rows="4" required></textarea></div>
+        <div class="form-group"><label>Upload Problem Image (Optional)</label><div class="file-upload-box"><i class="fa-solid fa-image"></i><span>Click to upload image</span><input type="file" accept="image/*" /></div></div>
+      </div>
+      <button type="submit" class="btn-primary btn-full">Confirm Booking <i class="fa-solid fa-check"></i></button>
+    </form>
+  </div>
+</div>
+
+<!-- ===== PAYMENT PAGE ===== -->
+<div id="payment-page" class="page">
+  <div class="page-wrapper narrow">
+    <button class="back-btn" onclick="showPage('booking-page')"><i class="fa-solid fa-arrow-left"></i> Back</button>
+    <h2 class="section-title" style="text-align:left;margin-bottom:0.25rem">Secure Payment</h2>
+    <p style="color:var(--text-muted);margin-bottom:2rem">Protected by Servicify escrow system</p>
+    <div id="payment-success-screen" class="hidden">
+      <div class="success-screen"><div class="success-icon"><i class="fa-solid fa-check-circle"></i></div><h2>Payment Successful!</h2><p>Your booking is confirmed. The worker will arrive at your scheduled time.</p><div class="booking-ref">Booking ID: <strong>#SRV-<span id="booking-id"></span></strong></div><button class="btn-primary" onclick="showPage('home')">Back to Home</button></div>
+    </div>
+    <div id="payment-form-wrap">
+      <div class="payment-summary"><h4>Order Summary</h4><div class="summary-row"><span>Service</span><span id="pay-service">Service</span></div><div class="summary-row"><span>Date &amp; Time</span><span id="pay-datetime">—</span></div><div class="summary-row"><span>Service Charge</span><span>₹499</span></div><div class="summary-row"><span>Platform Fee</span><span>₹49</span></div><div class="summary-row total"><span>Total</span><span>₹548</span></div></div>
+      <div class="payment-methods"><h4>Payment Method</h4>
+        <div class="pay-tabs"><button class="pay-tab active" onclick="selectPayTab(this,'upi')"><i class="fa-solid fa-mobile-screen"></i> UPI</button><button class="pay-tab" onclick="selectPayTab(this,'card')"><i class="fa-solid fa-credit-card"></i> Card</button><button class="pay-tab" onclick="selectPayTab(this,'netbanking')"><i class="fa-solid fa-building-columns"></i> Net Banking</button></div>
+        <div id="pay-upi" class="pay-panel"><div class="form-group"><label>UPI ID</label><div class="input-icon"><i class="fa-solid fa-at"></i><input type="text" placeholder="yourname@upi" /></div></div></div>
+        <div id="pay-card" class="pay-panel hidden"><div class="form-group"><label>Card Number</label><div class="input-icon"><i class="fa-solid fa-credit-card"></i><input type="text" placeholder="1234 5678 9012 3456" maxlength="19" /></div></div><div class="form-row2"><div class="form-group"><label>Expiry</label><div class="input-icon"><i class="fa-solid fa-calendar"></i><input type="text" placeholder="MM/YY" maxlength="5" /></div></div><div class="form-group"><label>CVV</label><div class="input-icon"><i class="fa-solid fa-lock"></i><input type="text" placeholder="123" maxlength="3" /></div></div></div></div>
+        <div id="pay-netbanking" class="pay-panel hidden"><div class="form-group"><label>Select Bank</label><div class="input-icon"><i class="fa-solid fa-building-columns"></i><select><option>SBI</option><option>HDFC</option><option>ICICI</option><option>Axis</option><option>Kotak</option></select></div></div></div>
+        <button class="btn-primary btn-full" onclick="processPayment()" style="margin-top:1.5rem">Pay ₹548 Securely <i class="fa-solid fa-lock"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== REVIEW PAGE ===== -->
+<div id="review-page" class="page">
+  <div class="page-wrapper narrow">
+    <button class="back-btn" onclick="showPage('home')"><i class="fa-solid fa-arrow-left"></i> Back</button>
+    <h2 class="section-title" style="text-align:left;margin-bottom:0.25rem">Rate &amp; Review</h2>
+    <p style="color:var(--text-muted);margin-bottom:2rem">Share your experience</p>
+    <form class="review-form" onsubmit="submitReview(event)">
+      <div class="form-card">
+        <h4>Overall Rating</h4>
+        <div class="star-rating" id="star-rating"><i class="fa-solid fa-star" data-val="1"></i><i class="fa-solid fa-star" data-val="2"></i><i class="fa-solid fa-star" data-val="3"></i><i class="fa-solid fa-star" data-val="4"></i><i class="fa-solid fa-star" data-val="5"></i></div>
+        <div id="star-label" class="star-label">Select a rating</div>
+        <div class="form-group" style="margin-top:1.5rem"><label>Your Review</label><textarea id="review-text" placeholder="Tell others about your experience..." rows="5" required></textarea></div>
+      </div>
+      <button type="submit" class="btn-primary btn-full">Submit Review <i class="fa-solid fa-paper-plane"></i></button>
+    </form>
+  </div>
+</div>
+
+<!-- ===== AI HELP PAGE ===== -->
+<div id="ai-page" class="page">
+  <div class="page-wrapper">
+    <button class="back-btn" onclick="showPage('home')"><i class="fa-solid fa-arrow-left"></i> Back</button>
+    <div class="ai-header"><div class="ai-badge"><i class="fa-solid fa-robot"></i> Powered by AI</div><h2>Upload your problem image &amp; get an instant AI solution</h2><p>Our AI detects the issue, suggests the right service, and gives a step-by-step fix guide</p></div>
+    <div class="ai-layout">
+      <div class="ai-upload-panel">
+        <div class="ai-drop-zone" onclick="document.getElementById('ai-upload').click()"><i class="fa-solid fa-cloud-arrow-up"></i><p>Click to upload your image</p><small>Supports JPG, PNG, WEBP</small><input type="file" id="ai-upload" accept="image/*" hidden onchange="handleAIUpload(this)" /></div>
+        <div id="ai-preview-wrap" class="hidden"><img id="ai-preview" alt="Uploaded problem" /><button class="btn-outline" style="margin-top:1rem;width:100%" onclick="analyzeImage()"><i class="fa-solid fa-magnifying-glass"></i> Analyze Problem</button></div>
+      </div>
+      <div class="ai-chat-panel">
+        <div class="chat-display" id="chat-display"><div class="chat-msg ai-msg"><div class="msg-avatar"><i class="fa-solid fa-robot"></i></div><div class="msg-bubble">Hello! I'm Servicify AI. Upload a photo of your problem and I'll diagnose it instantly. 🔍</div></div></div>
+        <div class="chat-input-row"><input type="text" id="chat-input" placeholder="Or type your problem here..." onkeypress="handleChatEnter(event)" /><button class="btn-primary" onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button></div>
+      </div>
+    </div>
+    <div id="ai-solution" class="ai-solution hidden"><h3><i class="fa-solid fa-lightbulb"></i> AI Analysis Result</h3><div class="solution-grid" id="solution-grid"></div></div>
+  </div>
+</div>
+
+<!-- ===== TENDERS PAGE ===== -->
+<div id="tenders-page" class="page">
+  <div class="page-wrapper">
+    <div class="page-header"><button class="back-btn" onclick="showPage('home')"><i class="fa-solid fa-arrow-left"></i> Back</button><h1>Tenders</h1><p>Browse or post service tenders for large projects</p></div>
+    <div style="text-align:right;margin-bottom:1.5rem"><button class="btn-primary" onclick="showTenderModal()"><i class="fa-solid fa-plus"></i> Post Tender</button></div>
+    <div class="tenders-grid" id="tenders-grid"></div>
+  </div>
+</div>
+
+<div id="tender-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeTenderModal()"><i class="fa-solid fa-xmark"></i></button>
+    <h3>Post a New Tender</h3>
+    <form onsubmit="submitTender(event)">
+      <div class="form-group"><label>Tender Title</label><div class="input-icon"><i class="fa-solid fa-file-alt"></i><input type="text" id="t-title" placeholder="e.g. Full home electrical rewiring" required /></div></div>
+      <div class="form-group"><label>Description</label><textarea id="t-desc" placeholder="Describe the project..." rows="3" required></textarea></div>
+      <div class="form-row2"><div class="form-group"><label>Budget (₹)</label><div class="input-icon"><i class="fa-solid fa-indian-rupee-sign"></i><input type="number" id="t-budget" placeholder="50000" required /></div></div><div class="form-group"><label>Deadline</label><div class="input-icon"><i class="fa-solid fa-calendar"></i><input type="date" id="t-deadline" required /></div></div></div>
+      <button type="submit" class="btn-primary btn-full">Post Tender</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD PAGE ===== -->
+<div id="dashboard-page" class="page">
+  <div class="page-wrapper">
+    <button class="back-btn" onclick="showPage('home')"><i class="fa-solid fa-arrow-left"></i> Back</button>
+    <div class="dashboard-header">
+      <div class="dash-avatar"><i class="fa-solid fa-user"></i></div>
+      <div class="dash-info"><h2>Rahul Sharma</h2><p>rahul.sharma@example.com &bull; Mumbai, Maharashtra</p><button class="btn-outline btn-sm" onclick="showPopup('Edit profile coming soon!')"><i class="fa-solid fa-pen"></i> Edit Profile</button></div>
+      <div class="dash-stats"><div class="dash-stat"><div class="dash-stat-num">12</div><div>Bookings</div></div><div class="dash-stat"><div class="dash-stat-num">8</div><div>Completed</div></div><div class="dash-stat"><div class="dash-stat-num">₹4,200</div><div>Spent</div></div></div>
+    </div>
+    <div class="dash-section"><h3><i class="fa-solid fa-history"></i> Service History</h3><div class="table-wrap"><table class="dash-table"><thead><tr><th>Worker</th><th>Service</th><th>Date</th><th>Amount</th><th>Status</th><th>Review</th></tr></thead><tbody id="service-history-body"></tbody></table></div></div>
+    <div class="dash-section"><h3><i class="fa-solid fa-receipt"></i> Payment History</h3><div class="table-wrap"><table class="dash-table"><thead><tr><th>Amount</th><th>Date</th><th>Mode</th><th>Invoice</th></tr></thead><tbody id="payment-history-body"></tbody></table></div></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker
+          .register("/sw.js")
+          .then(function () {
+            console.log("Servicify PWA Ready!");
+          })
+          .catch(function (err) {
+            console.log("SW Error: ", err);
+          });
+      });
+    }
+  </script>
+</body>
+</html>
